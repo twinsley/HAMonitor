@@ -1,0 +1,6 @@
+﻿services:
+  hamonitor:
+    image: hamonitor
+    build:
+      context: .
+      dockerfile: Dockerfile
