@@ -11,6 +11,7 @@ int rebootCounter = 0;
 string HOME_ASSISTANT = Environment.GetEnvironmentVariable("HOME_ASSISTANT");
 string SWITCH_URL = Environment.GetEnvironmentVariable("SWITCH_URL");
 string EMAIL = Environment.GetEnvironmentVariable("EMAIL");
+string SEND_EMAIL = Environment.GetEnvironmentVariable("SEND_EMAIL");
 bool KeepRunning = true;
 while (KeepRunning)
 {
@@ -19,7 +20,11 @@ while (KeepRunning)
     {
         rebootCounter++;
         waitTime += 60000;
-        reboot.SendEmailNotification(rebootCounter, EMAIL);
+        if (SEND_EMAIL == "true")
+        {
+            reboot.SendEmailNotification(rebootCounter, EMAIL);
+        }
+       
     }
     else
     {

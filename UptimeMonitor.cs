@@ -45,21 +45,25 @@ public class Uptime
     }
     private bool PingSystem(string HOME_ASSISTANT, HttpClient client)
     {
-        // Ping pingSender = new Ping();
-        Console.WriteLine($"Ping to {HOME_ASSISTANT}...");
-        // PingReply reply = pingSender.Send(HOME_ASSISTANT);
-        // Console.WriteLine(reply.Status);
-        
-        var result = client.GetAsync(HOME_ASSISTANT + ":8123").Result;
-        Console.WriteLine(result.StatusCode);
+        try
+        {
+            Console.WriteLine($"Ping to {HOME_ASSISTANT}...");
+            var result = client.GetAsync(HOME_ASSISTANT + ":8123").Result;
+            Console.WriteLine(result.StatusCode);
 
-        if (result.StatusCode == HttpStatusCode.OK)
-        {
-            return true;
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            return false;
+            Console.WriteLine(ex.Message);
+            return true;
         }
     }
 }
