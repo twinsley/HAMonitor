@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.NetworkInformation;
 
 namespace hamonitor;
@@ -6,12 +7,12 @@ public class Uptime
 {
     public bool UptimeMonitor(string HOME_ASSISTANT, string SWITCH_URL, HttpClient client)
     {
-        bool isSystemUp = PingSystem(HOME_ASSISTANT);
+        bool isSystemUp = PingSystem(HOME_ASSISTANT, client);
         Console.WriteLine(isSystemUp);
         if (!isSystemUp)
         {
             Task.Delay(20000).Wait();
-            isSystemUp = PingSystem(HOME_ASSISTANT);
+            isSystemUp = PingSystem(HOME_ASSISTANT, client);
             if (!isSystemUp)
             {
                 CyclePowerSwitch(client, SWITCH_URL);
@@ -42,14 +43,17 @@ public class Uptime
             Console.WriteLine(ex.Message);
         }
     }
-    private bool PingSystem(string HOME_ASSISTANT)
+    private bool PingSystem(string HOME_ASSISTANT, HttpClient client)
     {
-        Ping pingSender = new Ping();
+        // Ping pingSender = new Ping();
         Console.WriteLine($"Ping to {HOME_ASSISTANT}...");
-        PingReply reply = pingSender.Send(HOME_ASSISTANT);
-        Console.WriteLine(reply.Status);
+        // PingReply reply = pingSender.Send(HOME_ASSISTANT);
+        // Console.WriteLine(reply.Status);
+        
+        var result = client.GetAsync(HOME_ASSISTANT + ":8123").Result;
+        Console.WriteLine(result.StatusCode);
 
-        if (reply.Status == IPStatus.Success)
+        if (result.StatusCode == HttpStatusCode.OK)
         {
             return true;
         }
