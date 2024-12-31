@@ -1,10 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using hamonitor;
+using Microsoft.Extensions.DependencyInjection;
 
+var services = new ServiceCollection().AddHttpClient();
+var serviceProvider = services.BuildServiceProvider();
 
-HttpClient client = new HttpClient();
-Uptime uptime = new Uptime();
+Uptime uptime = new Uptime(serviceProvider.GetService<IHttpClientFactory>());
 RebootNotification reboot = new RebootNotification();
 int waitTime = 60000;
 int rebootCounter = 0;
@@ -15,7 +17,7 @@ string SEND_EMAIL = Environment.GetEnvironmentVariable("SEND_EMAIL");
 bool KeepRunning = true;
 while (KeepRunning)
 {
-    bool wasRebooted = uptime.UptimeMonitor(HOME_ASSISTANT, SWITCH_URL, client);
+    bool wasRebooted = uptime.UptimeMonitor(HOME_ASSISTANT, SWITCH_URL);
     if (wasRebooted)
     {
         rebootCounter++;

@@ -1,12 +1,16 @@
 using System.Net;
-using System.Net.NetworkInformation;
 
 namespace hamonitor;
 
 public class Uptime
 {
-    public bool UptimeMonitor(string HOME_ASSISTANT, string SWITCH_URL, HttpClient client)
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public Uptime( IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
+
+    public bool UptimeMonitor(string HOME_ASSISTANT, string SWITCH_URL)
     {
+        HttpClient client = _httpClientFactory.CreateClient();
         bool isSystemUp = PingSystem(HOME_ASSISTANT, client);
         Console.WriteLine(isSystemUp);
         if (!isSystemUp)
@@ -15,7 +19,7 @@ public class Uptime
             isSystemUp = PingSystem(HOME_ASSISTANT, client);
             if (!isSystemUp)
             {
-                CyclePowerSwitch(client, SWITCH_URL);
+                CyclePowerSwitch(SWITCH_URL);
                 return true;
             }
         }
@@ -25,8 +29,9 @@ public class Uptime
 
     }
 
-    private void CyclePowerSwitch(HttpClient client, string SWITCH_URL)
+    private void CyclePowerSwitch(string SWITCH_URL)
     {
+        HttpClient client = _httpClientFactory.CreateClient();
         try
         {
             string Switch_Url_On = SWITCH_URL + "/rpc/Switch.Set?id=0&on=true";
